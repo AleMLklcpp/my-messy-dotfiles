@@ -1,0 +1,66 @@
+(defwidget sliders_side [] 
+	(box :orientation "v" :space-evenly "false" :class "sliders-side"
+		(box :orientation "h" :class "slider-vol-side" :space-evenly "false" 
+			(box :class "label-vol-side" "")
+			(scale :min 0 :max 101 :value {volume} :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%")
+			(box :class "value-vol-side" {volume}))
+		(box :orientation "h" :class "slider-mic-side" :space-evenly "false" 
+			(box :class "label-mic-side" "")
+			(scale :min 0 :max 101 :value {mic} :onchange "pactl set-source-volume @DEFAULT_SOURCE@ {}%")
+			(box :class "value-mic-side" {mic}))
+		(box :orientation "h" :class "slider-bright-side" :space-evenly "false" 
+			(box :class "label-bright-side" "")
+			(scale :min 0 :max 101 :value {bright} :onchange "light -S {}")
+			(box :class "value-bright-side" {bright}))
+		(box :orientation "h" :class "slider-cpu-governor-side" :space-evenly "false" 
+			(box :class "label-cpu-governor-side" "")
+			(scale :min 0 :max 3 :value {cpu-governor} :onchange "~/.config/eww/scripts/set-cpu-governor.sh {}")
+			(box :class "value-cpu-governor-side" {cpu-governor-icon}))
+	)
+)
+
+(defwidget stats_side []
+	(box :orientation "v" :space-evenly "false" :class "sliders-side"
+		(box :orientation "h" :class "slider-vol-side" :space-evenly "false" 
+			(box :class "label-vol-side" "")
+			(radialmeter :value {EWW_TEMPS["DELL_SMM_CPU"]} :text "")
+		)
+	)
+)
+
+(defwidget radialmeter [value text ?class ?labelclass]
+    (circular-progress :value value
+        :class "radial ${class}"
+        :start-angle 0
+        :thickness 25
+        (label :text text
+            :class "radial-label ${labelclass}"
+            :limit-width 2
+            :show_truncated false
+            :wrap false
+            :angle 0.0
+		)
+	)
+)
+
+;; Battery charge vars
+(defpoll battery-remaining :interval "5s"  "cat /sys/class/power_supply/BAT1/capacity")
+(defpoll bat-icon :interval "5s"  "~/.config/tint2/scripts/battery.sh")
+
+;;Media
+(defpoll volume :interval "100ms"  "~/.config/eww/scripts/getvol")
+(defpoll mic :interval "100ms"  "pactl get-source-volume @DEFAULT_SOURCE@ | awk -F ' ' '{print $5}' | awk -F '%' '{print $1}'")
+
+;; Sys
+(defpoll cpu-governor-icon :interval "60s" "~/.config/eww/scripts/get-cpu-governor-icon.sh")
+(defpoll cpu-governor :interval "60s" "~/.config/eww/scripts/get-cpu-governor.sh")
+(defpoll bright :interval "100ms"  "light | awk -F . '{print $1}'")
+
+;; Sidebar stuff
+(defwindow sliders_side 
+	:geometry (geometry :x "10px" :y "397px" :width "300px" :height "205px")
+		(sliders_side))
+
+(defwindow stats_side
+	:geometry (geometry :x "10px" :y "600px" :width "300px" :height "205px")
+		(stats_side))
