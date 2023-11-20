@@ -26,14 +26,14 @@ int main() {
         if (read_stdin("if bspc query -T -d focused | grep -q 'client'; then\n echo 0\n else\n echo 1\n fi")=="1\n") {
             if (!open) {
                 for (int i=0; i<windows.size(); ++i) {
-                    system((open_str + windows[i] + " >> /dev/null").c_str());
+                    system((open_str + windows[i]).c_str());
                 }
                 open=true;
             }
         } else {
             if (open) {
                 for (int i=0; i<windows.size(); ++i) {
-                    system((close_str + windows[i] + " >> /dev/null").c_str());
+                    system((close_str + windows[i]).c_str());
                 }
                 open=false;
             }

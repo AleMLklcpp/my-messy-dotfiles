@@ -1,1 +1,6 @@
-
+- Polybar
+- Eww
+- Picom
+- Rofi
+- BSPWM
+- SXHKD
